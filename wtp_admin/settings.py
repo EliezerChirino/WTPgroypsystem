@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # =========================================================
 
 # 1. SECRET_KEY: Lee la variable 'SECRET_KEY' del entorno (del .env)
-SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-unsafe-secret-key") # Usar un fallback seguro, aunque ya tienes la tuya
+SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-unsafe-secret-key")
 
 # 2. DEBUG: Lee la variable 'DEBUG' y la convierte a booleano.
 # Usa 'False' como valor predeterminado si no se encuentra.
@@ -27,8 +27,20 @@ if ALLOWED_HOSTS_ENV:
 else:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
+# 4. CSRF_TRUSTED_ORIGINS: Para Railway/producción
+CSRF_TRUSTED_ORIGINS_ENV = os.environ.get("CSRF_TRUSTED_ORIGINS")
+
+if CSRF_TRUSTED_ORIGINS_ENV:
+    CSRF_TRUSTED_ORIGINS = CSRF_TRUSTED_ORIGINS_ENV.split(',')
+else:
+    # Valores por defecto para desarrollo local
+    CSRF_TRUSTED_ORIGINS = [
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+    ]
+
 # =========================================================
-# CONFIGURACIÓN DE APLICACIONES Y MIDDLEWARE (Sin cambios)
+# CONFIGURACIÓN DE APLICACIONES Y MIDDLEWARE
 # =========================================================
 
 INSTALLED_APPS = [
@@ -56,7 +68,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'wtp_admin.urls'
 
-# TEMPLATES (Sin cambios)
+# =========================================================
+# TEMPLATES
+# =========================================================
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -73,7 +88,10 @@ TEMPLATES = [
     },
 ]
 
+# =========================================================
 # WSGI
+# =========================================================
+
 WSGI_APPLICATION = 'wtp_admin.wsgi.application'
 
 # =========================================================
@@ -100,23 +118,28 @@ if DEBUG or not DB_HOST:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': DB_ENGINE, # Leído del .env
-            'NAME': DB_NAME,     # Leído del .env
-            'USER': DB_USER,     # Leído del .env
-            'PASSWORD': DB_PASSWORD, # Leído del .env
-            'HOST': DB_HOST,     # Leído del .env
-            'PORT': DB_PORT,     # Leído del .env
+            'ENGINE': DB_ENGINE,
+            'NAME': DB_NAME,
+            'USER': DB_USER,
+            'PASSWORD': DB_PASSWORD,
+            'HOST': DB_HOST,
+            'PORT': DB_PORT,
             'OPTIONS': {
                 'sslmode': 'require',
             }
         }
     }
-# -------------------------------------------------------------------------
 
-# USUARIO PERSONALIZADO (Sin cambios)
+# =========================================================
+# USUARIO PERSONALIZADO
+# =========================================================
+
 AUTH_USER_MODEL = 'core.User'
 
-# VALIDADORES DE CONTRASEÑA (Sin cambios)
+# =========================================================
+# VALIDADORES DE CONTRASEÑA
+# =========================================================
+
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -124,22 +147,34 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# LOCALIZACIÓN (Sin cambios)
+# =========================================================
+# LOCALIZACIÓN
+# =========================================================
+
 LANGUAGE_CODE = 'es-es'
 TIME_ZONE = 'America/Caracas'
 USE_I18N = True
 USE_TZ = True
 
-# ARCHIVOS ESTÁTICOS (Sin cambios)
+# =========================================================
+# ARCHIVOS ESTÁTICOS
+# =========================================================
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'core' / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# DEFAULT AUTO FIELD (Sin cambios)
+# =========================================================
+# DEFAULT AUTO FIELD
+# =========================================================
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Configuración Opcional de Jazzmin (Sin cambios)
+# =========================================================
+# CONFIGURACIÓN DE JAZZMIN (Admin UI)
+# =========================================================
+
 JAZZMIN_SETTINGS = {
     "site_title": "WTP - Admin System",
     "site_header": "WTP Admin",
